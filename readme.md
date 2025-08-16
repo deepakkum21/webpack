@@ -248,3 +248,93 @@ console.log(text); // 'This is file content...'
   }
 }
 ```
+
+---
+
+## Loaders in Webpack?
+
+- Loaders are `transformations that let Webpack process non-JavaScript files (like CSS, images, TypeScript, JSX, Markdown, etc.)`.
+- Webpack only understands JavaScript and JSON by default.
+- Loaders tell Webpack how to transform other file types into valid modules.
+- So **loaders = “file transformers”** in Webpack.
+- Each rule in `module.rules` defines how to handle a file type.
+
+- Example:
+  - `css-loader` → lets you import .css files into JS.
+  - `babel-loader` → transpiles ES6+ JavaScript to ES5.
+  - `ts-loader` → compiles TypeScript to JavaScript.
+
+| **Property** | **Type**                | **Description**                                                          | **Example**                                      |
+| ------------ | ----------------------- | ------------------------------------------------------------------------ | ------------------------------------------------ |
+| `test`       | RegExp                  | Matches file extensions to apply loader                                  | `/\.css$/` → match `.css` files                  |
+| `exclude`    | RegExp / Path           | Exclude certain files/folders                                            | `/node_modules/`                                 |
+| `include`    | Path / Array            | Limit to specific folders                                                | `path.resolve(__dirname, "src")`                 |
+| `use`        | Array / String / Object | Defines which loader(s) to use                                           | `"babel-loader"` or `[{ loader: 'css-loader' }]` |
+| `loader`     | String                  | Shortcut if only one loader is used                                      | `"babel-loader"`                                 |
+| `options`    | Object                  | Loader-specific options                                                  | `{ presets: ["@babel/preset-env"] }`             |
+| `oneOf`      | Array of rules          | Match **first rule only** inside this array (optimization)               | Useful for mutually exclusive loaders            |
+| `rules`      | Nested rules            | Apply rules recursively inside another rule                              | For complex config                               |
+| `type`       | String                  | Use Webpack 5 **asset modules** (`asset/resource`, `asset/inline`, etc.) | Instead of file-loader/url-loader                |
+
+### Examples
+
+1. **Single Loader**
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.js$/,
+      exclude: /node_modules/,
+      loader: 'babel-loader',
+    },
+  ];
+}
+```
+
+2. **Multiple Loaders (executed right → left)**
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+      // css-loader runs first, then style-loader
+    },
+  ];
+}
+```
+
+3. **Loader with Options**
+
+```js
+module: {
+  rules: [
+    {
+      test: /\.ts$/,
+      use: {
+        loader: 'ts-loader',
+        options: {
+          transpileOnly: true,
+        },
+      },
+    },
+  ];
+}
+```
+
+4. **Conditional Rule (oneOf)**
+
+```js
+module: {
+  rules: [
+    {
+      oneOf: [
+        { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+        { test: /\.txt$/, type: 'asset/source' },
+      ],
+    },
+  ];
+}
+```
