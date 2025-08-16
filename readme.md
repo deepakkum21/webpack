@@ -32,6 +32,143 @@
 |                  | `devServer.static`                    | Serve static files from a folder.                                 |
 |                  | `devServer.historyApiFallback`        | Fallback for SPA routing.                                         |
 
+---
+
+## Sample webpack.config
+
+```js
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+  // 🔑 Entry point(s)
+  entry: {
+    main: './src/index.js',
+    admin: './src/admin.js',
+  },
+
+  // 📦 Output configuration
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contenthash].js',
+    publicPath: '/',
+    clean: true, // clears old build files
+  },
+
+  // ⚡ Mode: development | production | none
+  mode: 'development',
+
+  // 🛠️ Source maps
+  devtool: 'source-map',
+
+  // 🌍 Target environment
+  target: 'web',
+
+  // 📚 Module rules (loaders)
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'], // CSS support
+      },
+      {
+        test: /\.(png|jpg|jpeg|gif|svg)$/,
+        type: 'asset', // auto choose between resource/inline
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024, // 8kb
+          },
+        },
+      },
+      {
+        test: /\.txt$/,
+        type: 'asset/source', // raw file as string
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: 'babel-loader',
+      },
+    ],
+  },
+
+  // 📦 Resolve config
+  resolve: {
+    extensions: ['.js', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
+  },
+
+  // 🔌 Plugins
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: 'index.html',
+    }),
+  ],
+
+  // ⚙️ Optimization
+  optimization: {
+    minimize: true,
+    splitChunks: {
+      chunks: 'all',
+    },
+    runtimeChunk: 'single',
+    moduleIds: 'deterministic',
+    sideEffects: true,
+  },
+
+  // 🖥️ Dev Server
+  devServer: {
+    port: 3000,
+    open: true,
+    hot: true,
+    static: {
+      directory: path.join(__dirname, 'public'),
+    },
+    historyApiFallback: true, // SPA routing
+  },
+
+  // 📊 Performance & logging
+  performance: {
+    hints: 'warning',
+    maxEntrypointSize: 512000, // 500kb
+    maxAssetSize: 512000,
+  },
+  infrastructureLogging: {
+    level: 'info',
+  },
+
+  // 🔄 Cache
+  cache: {
+    type: 'filesystem',
+  },
+
+  // 🚧 Externals (don’t bundle react, use global React instead)
+  externals: {
+    react: 'React',
+    'react-dom': 'ReactDOM',
+  },
+
+  // 🧪 Experimental features
+  experiments: {
+    topLevelAwait: true,
+  },
+
+  // 👀 Watch mode (optional)
+  watch: false,
+  watchOptions: {
+    ignored: /node_modules/,
+  },
+
+  // 📈 Stats output
+  stats: 'normal',
+};
+```
+
+---
+
 ## Asset modules
 
 - a built-in `way to handle static files` (images, fonts, media, etc.) without extra loaders like file-loader or url-loader.
