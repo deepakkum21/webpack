@@ -546,3 +546,80 @@ module.exports = {
 - It lets you write `HTML templates with embedded expressions ({{ }}) that are replaced with actual data at runtime`.
 - It `helps separate HTML (view) from logic (data)`.
 - 👉 Think of it as a `lightweight alternative to JSX, Angular templates, or EJS`.
+
+---
+
+## What is mode?
+
+- mode is a top-level configuration option in Webpack (since v4).
+- It tells Webpack how to optimize the build.
+- Allowed values:
+  - `development`
+  - `production`
+  - `none`
+
+1. **Development Mode**
+
+- Focus: fast build, debugging support.
+- Features enabled:
+  - Named modules & chunks
+  - Useful error messages
+  - `Source maps (eval by default)`
+  - `No/minimal code optimization`
+
+```js
+module.exports = {
+  mode: 'development',
+  devtool: 'eval-source-map', // better debugging
+  devServer: {
+    hot: true,
+    open: true,
+  },
+};
+```
+
+2. **Production Mode**
+
+- Focus: optimized, smaller bundle.
+- Features enabled automatically:
+  - `Minification with Terser`
+  - `Tree shaking` (remove unused code)
+  - `cope hoisting`
+  - Module/chunk IDs optimized for caching
+  - Performance hints
+
+```js
+module.exports = {
+  mode: 'production',
+  output: {
+    filename: '[name].[contenthash].js', // cache busting
+  },
+  optimization: {
+    splitChunks: { chunks: 'all' },
+    runtimeChunk: 'single',
+  },
+};
+```
+
+3. **None Mode**- Focus: no defaults applied.
+
+- Behaves like a "raw" Webpack build.
+- No optimizations, no dev defaults.
+- You must configure everything manually.
+
+```js
+module.exports = {
+  mode: 'none',
+  // You must define loaders, plugins, and optimizations yourself
+};
+```
+
+webpack --mode development
+webpack --mode production
+webpack --mode none
+
+| Mode          | Optimizations Enabled                               | Use Case             |
+| ------------- | --------------------------------------------------- | -------------------- |
+| `development` | Source maps, readable output, fast rebuilds         | Coding / debugging   |
+| `production`  | Minification, tree-shaking, scope hoisting, caching | Deployment           |
+| `none`        | No optimizations at all                             | Custom/manual config |
