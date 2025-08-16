@@ -623,3 +623,56 @@ webpack --mode none
 | `development` | Source maps, readable output, fast rebuilds         | Coding / debugging   |
 | `production`  | Minification, tree-shaking, scope hoisting, caching | Deployment           |
 | `none`        | No optimizations at all                             | Custom/manual config |
+
+---
+
+## Webpack Dev Server?
+
+- `Local server` for serving bundled files.
+- `Auto-reload or Hot Module Replacement` (HMR) when code changes.
+- Faster rebuilds using memory instead of writing to disk.
+- Built-in proxying for API requests.
+- 👉 It’s meant for development only (not production).
+
+```bash
+npm install --save-dev webpack-dev-server
+npm webpack serve --mode development
+```
+
+```js
+// webpack.config.js
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    filename: 'bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
+  mode: 'development',
+  devServer: {
+    port: 3000, // run on http://localhost:3000
+    open: true, // auto-open browser
+    hot: true, // enable Hot Module Replacement
+    static: {
+      directory: path.join(__dirname, 'public'), // serve static files
+    },
+  },
+};
+```
+
+| **Option**           | **Description**                                                         |
+| -------------------- | ----------------------------------------------------------------------- |
+| `port`               | Port number (default: `8080`).                                          |
+| `host`               | Host address (default: `localhost`).                                    |
+| `open`               | Auto-open browser when server starts.                                   |
+| `hot`                | Enable **Hot Module Replacement** (update modules without full reload). |
+| `liveReload`         | Reload the page when files change (default: true if HMR off).           |
+| `static`             | Serve static files from a folder.                                       |
+| `historyApiFallback` | Redirect 404s → `index.html` (useful for SPAs with React/Angular/Vue).  |
+| `proxy`              | Forward API requests to a backend server.                               |
+| `compress`           | Enable gzip compression.                                                |
+| `https`              | Enable HTTPS server.                                                    |
+| `client`             | Configure browser overlay for errors/warnings.                          |
+
+---
