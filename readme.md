@@ -539,3 +539,10 @@ module.exports = {
 ```
 
 ---
+
+## Handlebars
+
+- Handlebars.js is a `popular templating engine for JavaScript`.
+- It lets you write `HTML templates with embedded expressions ({{ }}) that are replaced with actual data at runtime`.
+- It `helps separate HTML (view) from logic (data)`.
+- 👉 Think of it as a `lightweight alternative to JSX, Angular templates, or EJS`.
