@@ -338,3 +338,139 @@ module: {
   ];
 }
 ```
+
+---
+
+## babel-loader
+
+- It’s a Webpack `loader that uses Babel to transpile modern JavaScript (ES6+, JSX, TypeScript, etc.) into older JavaScript that browsers understand`.
+- It connects Webpack with Babel.
+
+```bash
+npm install --save-dev babel-loader @babel/core @babel/preset-env
+```
+
+### Basic babel-loader Config in Webpack
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+          },
+        },
+      },
+    ],
+  },
+};
+```
+
+### Common Babel Presets
+
+- Presets are `collections of plugins for common scenarios`
+  | **Preset** | **Purpose** |
+  | -------------------------- | ------------------------------------------------- |
+  | `@babel/preset-env` | Convert modern JS → ES5, based on browser targets |
+  | `@babel/preset-react` | Transpile React JSX |
+  | `@babel/preset-typescript` | Transpile TypeScript |
+  | `@babel/preset-flow` | Strip Flow types |
+
+```bash
+# for react
+"presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-typescript"]
+```
+
+### Common Babel Plugins
+
+- Plugins handle `specific syntax/features` (can be used standalone or in addition to presets)
+  | **Plugin** | **Purpose** |
+  | ---------------------------------------------------- | ----------------------------------------------- |
+  | `@babel/plugin-transform-runtime` | Reuse Babel helpers, reduce bundle size |
+  | `@babel/plugin-proposal-class-properties` | Enable `class` fields (`class X { field = 1 }`) |
+  | `@babel/plugin-proposal-object-rest-spread` | Support `{ ...obj }` spread/rest |
+  | `@babel/plugin-syntax-dynamic-import` | Support `import()` syntax |
+  | `@babel/plugin-transform-arrow-functions` | Convert arrow functions → ES5 |
+  | `@babel/plugin-transform-async-to-generator` | Async/await → generators |
+  | `@babel/plugin-proposal-optional-chaining` | Support `?.` operator |
+  | `@babel/plugin-proposal-nullish-coalescing-operator` | Support `??` operator |
+
+### webpack.config.js
+
+```js
+const path = require('path');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.js',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx|ts|tsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: [
+              '@babel/preset-env', // modern JS → ES5
+              '@babel/preset-react', // JSX support
+              '@babel/preset-typescript', // TypeScript support
+            ],
+            plugins: [
+              '@babel/plugin-transform-runtime',
+              '@babel/plugin-proposal-class-properties',
+              '@babel/plugin-proposal-object-rest-spread',
+              '@babel/plugin-syntax-dynamic-import',
+              '@babel/plugin-transform-arrow-functions',
+              '@babel/plugin-transform-async-to-generator',
+              '@babel/plugin-proposal-optional-chaining',
+              '@babel/plugin-proposal-nullish-coalescing-operator',
+            ],
+          },
+        },
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.js', '.jsx', '.ts', '.tsx'],
+  },
+};
+```
+
+### Alternative: .babelrc or babel.config.json
+
+```js
+// .babelrc or babel.config.json
+{
+  "presets": [
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    "@babel/plugin-proposal-class-properties",
+    "@babel/plugin-proposal-object-rest-spread",
+    "@babel/plugin-syntax-dynamic-import",
+    "@babel/plugin-transform-arrow-functions",
+    "@babel/plugin-transform-async-to-generator",
+    "@babel/plugin-proposal-optional-chaining",
+    "@babel/plugin-proposal-nullish-coalescing-operator"
+  ]
+}
+```
+
+```js
+//webpack.config.js
+use: 'babel-loader';
+```
+
+---
