@@ -473,4 +473,69 @@ module.exports = {
 use: 'babel-loader';
 ```
 
+## Note
+
+- all major browsers have already added support for class properties.
+- Nowadays this feature works out-of-the-box, and you don't have to include @babel/plugin-proposal-class-properties separately in your Webpack configuration.
+
+---
+
+## Plugins in Webpack?
+
+- Plugins extend or `customize Webpack’s build process`.
+- While loaders transform individual files, `plugins can affect the entire bundle or lifecycle (optimization, asset management, injection, etc.)`.
+- They hook into Webpack’s compilation lifecycle.
+
+| **Plugin**                           | **Package**                      | **Purpose**                                                  |
+| ------------------------------------ | -------------------------------- | ------------------------------------------------------------ |
+| **HtmlWebpackPlugin**                | `html-webpack-plugin`            | Generates `index.html` with `<script>` tags for bundles.     |
+| **CleanWebpackPlugin**               | `clean-webpack-plugin`           | Cleans `/dist` folder before each build.                     |
+| **MiniCssExtractPlugin**             | `mini-css-extract-plugin`        | Extracts CSS into separate `.css` files (instead of inline). |
+| **DefinePlugin**                     | Built-in                         | Define environment variables (e.g., `process.env.NODE_ENV`). |
+| **ProvidePlugin**                    | Built-in                         | Auto-load modules instead of importing them everywhere.      |
+| **HotModuleReplacementPlugin (HMR)** | Built-in                         | Enable Hot Module Replacement during development.            |
+| **ProgressPlugin**                   | Built-in                         | Show compilation progress.                                   |
+| **CopyWebpackPlugin**                | `copy-webpack-plugin`            | Copy static files/folders to build output.                   |
+| **CompressionWebpackPlugin**         | `compression-webpack-plugin`     | Create `.gz` compressed assets for production.               |
+| **BundleAnalyzerPlugin**             | `webpack-bundle-analyzer`        | Visualize bundle contents in an interactive treemap.         |
+| **TerserWebpackPlugin**              | `terser-webpack-plugin`          | Minify JavaScript (used by default in prod).                 |
+| **CssMinimizerPlugin**               | `css-minimizer-webpack-plugin`   | Minify CSS files.                                            |
+| **WorkboxWebpackPlugin**             | `workbox-webpack-plugin`         | Generate a service worker for PWA support.                   |
+| **ForkTsCheckerWebpackPlugin**       | `fork-ts-checker-webpack-plugin` | Runs TypeScript type checking in a separate process.         |
+| **ESLintWebpackPlugin**              | `eslint-webpack-plugin`          | Run ESLint on build to enforce code quality.                 |
+| **FaviconsWebpackPlugin**            | `favicons-webpack-plugin`        | Generate favicons from a logo.                               |
+
+### example
+
+```js
+const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const webpack = require('webpack');
+
+module.exports = {
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'bundle.[contenthash].js',
+  },
+  plugins: [
+    new CleanWebpackPlugin(), // clean dist
+    new HtmlWebpackPlugin({
+      template: './public/index.html',
+      filename: 'index.html',
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production'),
+    }),
+    new BundleAnalyzerPlugin(), // visualize bundle
+  ],
+};
+```
+
 ---
