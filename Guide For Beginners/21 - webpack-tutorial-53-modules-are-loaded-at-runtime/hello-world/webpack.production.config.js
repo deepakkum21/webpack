@@ -9,7 +9,7 @@ module.exports = {
   output: {
     filename: '[name].[contenthash].js',
     path: path.resolve(__dirname, './dist'),
-    publicPath: 'http://localhost:9001/',
+    publicPath: 'http://localhost:9001/', // Ensure the public path is set correctly for the remote module which exposes the component
   },
   mode: 'production',
   optimization: {
