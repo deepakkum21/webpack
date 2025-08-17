@@ -787,3 +787,99 @@ module.exports = {
 - Use `multiple HtmlWebpackPlugin instances (one per page)`.
 - Each page can include specific JS chunks.
 - Useful for multi-page applications (like corporate sites, blogs, or dashboards)-
+
+---
+
+## Optimization
+
+| Technique                         | Purpose                            |
+| --------------------------------- | ---------------------------------- |
+| `mode: "production"`              | Enables default optimizations      |
+| Code splitting (`splitChunks`)    | Reduce bundle size, load on demand |
+| Minification (JS/CSS)             | Shrinks file size                  |
+| Tree shaking                      | Removes unused code                |
+| Content hash                      | Better caching                     |
+| Bundle analyzer                   | Analyze size & dependencies        |
+| Compression (gzip/brotli)         | Smaller assets                     |
+| Image optimization                | Reduce image size                  |
+| Lazy loading (dynamic imports)    | Load modules only when needed      |
+| Runtime chunk + deterministic IDs | Stable caching & smaller diffs     |
+
+### 1. Code Splitting
+
+| Method                    | When to Use                  |
+| ------------------------- | ---------------------------- |
+| **Multiple entry points** | Multi-page apps (MPA)        |
+| **SplitChunksPlugin**     | Extract vendor & common code |
+| **Dynamic import()**      | Lazy load modules on demand  |
+
+1. **Entry Points Splitting**
+
+```js
+// Define multiple entry points (not common for SPAs, useful in MPAs).
+module.exports = {
+  entry: {
+    home: './src/home.js',
+    about: './src/about.js',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: __dirname + '/dist',
+  },
+};
+```
+
+```css
+dist/
+ ├── home.bundle.js
+ └── about.bundle.js
+```
+
+2. **Prevent Duplication with SplitChunksPlugin**
+
+```js
+// Automatically split vendor libraries & shared code.
+module.exports = {
+  optimization: {
+    splitChunks: {
+      chunks: 'all', // async, initial, or all
+      minSize: 20000, // minimum size to create a chunk (20kb default)
+      maxSize: 0, // no max size by default
+      minChunks: 1, // must be shared at least once
+      cacheGroups: {
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+        commons: {
+          name: 'commons',
+          minChunks: 2,
+          chunks: 'all',
+        },
+      },
+    },
+  },
+};
+```
+
+```css
+dist/
+ ├── main.js         (your app code)
+ ├── vendors.js      (node_modules)
+ └── commons.js      (shared code)
+```
+
+3. **Dynamic Imports (Lazy Loading)**
+
+- Webpack `supports import() syntax for on-demand loading.`
+- ✅ This will create a s`eparate math.[hash].js chunk, only loaded when button is clicked`.
+
+```js
+// index.js
+document.getElementById('btn').addEventListener('click', () => {
+  import('./math').then((math) => {
+    console.log(math.add(2, 3));
+  });
+});
+```
