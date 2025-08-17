@@ -17,6 +17,7 @@ module.exports = {
   optimization: {
     splitChunks: {
       chunks: 'all', // This will extract common dependencies into a separate chunk
+      minSize: 20000, // minimum size to create a chunk (20kb default)
     },
   },
   module: {
