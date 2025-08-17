@@ -676,3 +676,114 @@ module.exports = {
 | `client`             | Configure browser overlay for errors/warnings.                          |
 
 ---
+
+## How to generate multiple html files
+
+```js
+const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+  entry: {
+    'hello-world': './src/hello-world.js',
+    kiwi: './src/kiwi.js',
+  },
+  output: {
+    filename: '[name].[contenthash].js', // [name] is the key of entry point
+    path: path.resolve(__dirname, './dist'),
+    publicPath: '',
+  },
+  mode: 'production',
+  module: {
+    rules: [
+      {
+        test: /\.(png|jpg)$/,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 3 * 1024,
+          },
+        },
+      },
+      {
+        test: /\.txt/,
+        type: 'asset/source',
+      },
+      {
+        test: /\.css$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+      {
+        test: /\.scss$/,
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/env'],
+            plugins: ['@babel/plugin-proposal-class-properties'],
+          },
+        },
+      },
+      {
+        test: /\.hbs$/,
+        use: ['handlebars-loader'],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css', // [name] is the key of entry point
+    }),
+    new CleanWebpackPlugin(),
+    new HtmlWebpackPlugin({
+      filename: 'hello-world.html', // output file name of html file
+      chunks: ['hello-world'], // same name as entry point key
+      title: 'Hello world',
+      description: 'some description',
+      template: 'src/page-template.hbs', // reference to how to generate html file
+    }),
+    new HtmlWebpackPlugin({
+      filename: 'kiwi.html', // output file name of html file
+      chunks: ['kiwi'], // same name as entry point key
+      title: 'Kiwi',
+      description: 'Kiwi',
+      template: 'src/page-template.hbs', // reference to how to generate html file
+    }),
+  ],
+};
+```
+
+## Auto-generate Multiple Page [dynamically create plugin instances]
+
+```js
+const pages = ['index', 'about', 'contact'];
+
+module.exports = {
+  entry: pages.reduce((config, page) => {
+    config[page] = `./src/${page}.js`;
+    return config;
+  }, {}),
+
+  plugins: pages.map(
+    (page) =>
+      new HtmlWebpackPlugin({
+        // multiple HtmlWebpackPlugin instances (one per page)
+        filename: `${page}.html`,
+        template: `./src/templates/${page}.html`,
+        chunks: [page],
+      })
+  ),
+};
+```
+
+## Note
+
+- Use `multiple HtmlWebpackPlugin instances (one per page)`.
+- Each page can include specific JS chunks.
+- Useful for multi-page applications (like corporate sites, blogs, or dashboards)-
